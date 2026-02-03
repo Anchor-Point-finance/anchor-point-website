@@ -73,6 +73,7 @@
   cursor: pointer;
   position: relative;
   padding: var(--spacing-sm) 0;
+  text-decoration: none;
 }
 
 .navbar__link::after {
@@ -88,6 +89,12 @@
     var(--color-secondary-main)
   );
   transition: width var(--transition-base);
+}
+
+.navbar__link:hover,
+.navbar__link:hover::after,
+.navbar__link:focus::after {
+  text-decoration: none;
 }
 
 .navbar__link:hover::after,
