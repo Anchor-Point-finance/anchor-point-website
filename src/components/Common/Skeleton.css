@@ -1,0 +1,11 @@
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-lighter) 0%,
+    var(--color-neutral-light) 50%,
+    var(--color-neutral-lighter) 100%
+  );
+  background-size: 200% 100%;
+  display: block;
+  margin-bottom: var(--spacing-md);
+}

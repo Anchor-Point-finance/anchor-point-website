@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Calculator from '../components/Calculator';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Calculator from '../components/Calculator/Calculator';
+import Navbar from '../components/Layout/Navbar';
+import Footer from '../components/Layout/Footer';
+import CalculatorPageSkeleton from './skeletons/CalculatorPageSkeleton';
 import './CalculatorPage.css';
 
 const CalculatorPage: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay for skeleton to be visible
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <CalculatorPageSkeleton />;
+  }
+
   return (
     <div>
       <Navbar />
