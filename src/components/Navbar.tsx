@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Navbar.css';
 
@@ -6,11 +7,13 @@ interface NavLink {
   label: string;
   href: string;
   isExternal?: boolean;
+  anchor?: string;
 }
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,23 +24,43 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle scroll to section after navigation
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && location.pathname === '/') {
+      const anchorId = hash.replace('#', '');
+      const element = document.getElementById(anchorId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
+
   const navLinks: NavLink[] = [
-    { label: 'Home', href: '#home', isExternal: false },
-    { label: 'Services', href: '#services', isExternal: false },
-    { label: 'About', href: '#about', isExternal: false },
-    { label: 'Contact', href: '#contact', isExternal: false },
+    { label: 'Home', href: '/', isExternal: false, anchor: 'home' },
+    { label: 'Services', href: '/', isExternal: false, anchor: 'services' },
+    { label: 'About', href: '/', isExternal: false, anchor: 'about' },
+    { label: 'Contact', href: '/', isExternal: false, anchor: 'contact' },
     { label: 'Calculators', href: '/calculators', isExternal: true },
   ];
 
-  const handleNavClick = (href: string, isExternal?: boolean) => {
-    if (isExternal) {
-      // Router will handle this via Link
-      return;
+  const handleNavClick = (link: NavLink) => {
+    setIsOpen(false);
+
+    if (link.isExternal) {
+      return; // Router link will handle this
     }
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
+
+    const isOnMainPage = location.pathname === '/';
+
+    if (isOnMainPage && link.anchor) {
+      // Smooth scroll on main page
+      const element = document.getElementById(link.anchor);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -76,35 +99,44 @@ const Navbar: React.FC = () => {
                 {link.label}
               </motion.a>
             ) : (
-              <motion.button
+              <Link
                 key={link.href}
+                to={link.anchor ? `/#${link.anchor}` : link.href}
+                onClick={() => handleNavClick(link)}
                 className="navbar__link"
-                onClick={() => handleNavClick(link.href, link.isExternal)}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
               >
-                {link.label}
-              </motion.button>
+                <motion.span
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ y: 0 }}
+                >
+                  {link.label}
+                </motion.span>
+              </Link>
             )
           ))}
         </div>
 
         {/* CTA Button */}
-        <motion.a
-          href="#contact"
-          className="navbar__cta"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={(e) => {
-            e.preventDefault();
-            handleNavClick('#contact');
+        <Link
+          to="/#contact"
+          onClick={() => {
+            const contactLink = navLinks.find(l => l.label === 'Contact');
+            if (contactLink) {
+              handleNavClick(contactLink);
+            }
           }}
+          className="navbar__cta"
         >
-         Book Appointment
-        </motion.a>
+          <motion.span
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Book Appointment
+          </motion.span>
+        </Link>
 
         {/* Mobile Menu Toggle */}
         <motion.button
@@ -145,31 +177,40 @@ const Navbar: React.FC = () => {
                   {link.label}
                 </motion.a>
               ) : (
-                <motion.button
+                <Link
                   key={link.href}
+                  to={link.anchor ? `/#${link.anchor}` : link.href}
+                  onClick={() => handleNavClick(link)}
                   className="navbar__mobile-link"
-                  onClick={() => handleNavClick(link.href, link.isExternal)}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
                 >
-                  {link.label}
-                </motion.button>
+                  <motion.span
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    {link.label}
+                  </motion.span>
+                </Link>
               )
             ))}
-            <motion.a
-              href="#contact"
-              className="navbar__mobile-cta"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick('#contact');
+            <Link
+              to="/#contact"
+              onClick={() => {
+                const contactLink = navLinks.find(l => l.label === 'Contact');
+                if (contactLink) {
+                  handleNavClick(contactLink);
+                }
               }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: navLinks.length * 0.05 }}
+              className="navbar__mobile-cta"
             >
-              Book Appointment
-            </motion.a>
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navLinks.length * 0.05 }}
+              >
+                Book Appointment
+              </motion.span>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
