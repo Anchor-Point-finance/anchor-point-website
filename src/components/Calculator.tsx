@@ -78,20 +78,6 @@ const Calculator: React.FC = () => {
   return (
     <section id="calculator" className="calculator">
       <div className="calculator__container">
-        <motion.div
-          className="calculator__header"
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <h2 className="calculator__title">Financial Calculators</h2>
-          <p className="calculator__subtitle">
-            Use our powerful tools to calculate loan payments, evaluate refinancing options,
-            and view detailed amortization schedules
-          </p>
-        </motion.div>
-
         {/* Calculator Selector Cards */}
         <motion.div
           className="calculator__cards"
@@ -99,6 +85,7 @@ const Calculator: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
+          style={{ marginBottom: 'var(--spacing-2xl)' }}
         >
           {calculators.map((calc) => (
             <motion.button

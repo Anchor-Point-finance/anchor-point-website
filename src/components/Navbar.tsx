@@ -5,6 +5,7 @@ import './Navbar.css';
 interface NavLink {
   label: string;
   href: string;
+  isExternal?: boolean;
 }
 
 const Navbar: React.FC = () => {
@@ -21,14 +22,18 @@ const Navbar: React.FC = () => {
   }, []);
 
   const navLinks: NavLink[] = [
-    { label: 'Home', href: '#home' },
-    { label: 'Services', href: '#services' },
-    { label: 'About', href: '#about' },
-    { label: 'Contact', href: '#contact' },
-     { label: 'Calculator', href: '#calculator' },
+    { label: 'Home', href: '#home', isExternal: false },
+    { label: 'Services', href: '#services', isExternal: false },
+    { label: 'About', href: '#about', isExternal: false },
+    { label: 'Contact', href: '#contact', isExternal: false },
+    { label: 'Calculators', href: '/calculators', isExternal: true },
   ];
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (href: string, isExternal?: boolean) => {
+    if (isExternal) {
+      // Router will handle this via Link
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -57,18 +62,33 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <div className="navbar__desktop-menu">
           {navLinks.map((link, index) => (
-            <motion.button
-              key={link.href}
-              className="navbar__link"
-              onClick={() => handleNavClick(link.href)}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -2 }}
-              whileTap={{ y: 0 }}
-            >
-              {link.label}
-            </motion.button>
+            link.isExternal ? (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                className="navbar__link"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ y: 0 }}
+              >
+                {link.label}
+              </motion.a>
+            ) : (
+              <motion.button
+                key={link.href}
+                className="navbar__link"
+                onClick={() => handleNavClick(link.href, link.isExternal)}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ y: 0 }}
+              >
+                {link.label}
+              </motion.button>
+            )
           ))}
         </div>
 
@@ -113,16 +133,29 @@ const Navbar: React.FC = () => {
             transition={{ duration: 0.3 }}
           >
             {navLinks.map((link, index) => (
-              <motion.button
-                key={link.href}
-                className="navbar__mobile-link"
-                onClick={() => handleNavClick(link.href)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                {link.label}
-              </motion.button>
+              link.isExternal ? (
+                <motion.a
+                  key={link.href}
+                  href={link.href}
+                  className="navbar__mobile-link"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  {link.label}
+                </motion.a>
+              ) : (
+                <motion.button
+                  key={link.href}
+                  className="navbar__mobile-link"
+                  onClick={() => handleNavClick(link.href, link.isExternal)}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  {link.label}
+                </motion.button>
+              )
             ))}
             <motion.a
               href="#contact"
